@@ -1,0 +1,26 @@
+#include <string>
+#include <vector>
+#include <stack>
+
+using namespace std;
+
+int solution(vector<int> ingredient) {
+    int answer = 0, startIdx = 0;
+    vector<int> varr = {0};
+ 
+    for (int i : ingredient) {
+        if (varr.back() == 1 && i == 2) {
+            varr.back() = 12;
+        }
+        else if (varr.back() == 12 && i == 3) {
+            varr.back() = 123;
+        }
+        else if (varr.back() == 123 && i == 1) {
+            answer++; varr.pop_back();
+        }
+        else {
+            varr.push_back(i);
+        }
+    }
+    return answer;
+}
