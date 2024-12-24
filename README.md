@@ -1,1 +1,1 @@
-<img src="https://github.com/kwon1232/GLIM/issues/1">
+<img width="80%" src="https://github.com/user-attachments/assets/8f019635-757b-451d-a7f7-9e284966c242">
