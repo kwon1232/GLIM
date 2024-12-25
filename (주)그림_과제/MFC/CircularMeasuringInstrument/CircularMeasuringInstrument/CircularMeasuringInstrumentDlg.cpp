@@ -285,6 +285,12 @@ void CCircularMeasuringInstrumentDlg::MakeCircle()
 
 void CCircularMeasuringInstrumentDlg::OnOpenImage()
 {
+	if (IsAction)
+	{
+		AfxMessageBox(L"다른 작업을 수행중 입니다.");
+		return;
+	}
+
 	CString initialDir = _T("C:\\Image");
 	CFileDialog dlg(TRUE, L"bmp", NULL, OFN_FILEMUSTEXIST, L"Image Files (*.bmp;*.jpg)|*.bmp;*.jpg|All Files (*.*)|*.*||");
 	dlg.m_ofn.lpstrInitialDir = initialDir;
@@ -292,8 +298,8 @@ void CCircularMeasuringInstrumentDlg::OnOpenImage()
 
 	CString selectedFilePath = dlg.GetPathName();
 
-	if (!m_image.IsNull())
-	{
+	if (!m_image.IsNull()) {
+		memset(&m_image, 0, sizeof(CImage));
 		m_image.Destroy();
 	}
 
@@ -508,6 +514,7 @@ void CCircularMeasuringInstrumentDlg::DrawCircleAnnotations(CDC* pImageDC, doubl
 void CCircularMeasuringInstrumentDlg::PerformAction()
 {
 	if (m_image.IsNull()) return;
+	IsAction = true;
 
 	int nWidth = m_image.GetWidth();
 	int nHeight = m_image.GetHeight();
@@ -601,6 +608,7 @@ void CCircularMeasuringInstrumentDlg::PerformAction()
 		UpdateDisplay();
 	}
 
+	IsAction = false; 
 }
 
 void CCircularMeasuringInstrumentDlg::DrawCircleAt(int x, int y, int radius)

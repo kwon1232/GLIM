@@ -44,6 +44,8 @@ public:
 	afx_msg void OnBnClickedLoadImageBnt();
 	afx_msg void OnBnClickedActionButton();
 
+	bool IsAction = false;
+
 	void InitMakeCircle();
 
 	void DrawBackground(int nBpp);
