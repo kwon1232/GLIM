@@ -191,8 +191,8 @@ void CCircularMeasuringInstrumentDlg::InitMakeCircle()
 		MakeCircle();
 
 		CString savePath = _T("C:\\Image\\save_");
-
-		GetNewFileName(savePath);
+		if(CreateFilePathIfNotExists(_T("C:\\Image")))
+			GetNewFileName(savePath);
 	}
 }
 
@@ -292,6 +292,9 @@ void CCircularMeasuringInstrumentDlg::OnOpenImage()
 	}
 
 	CString initialDir = _T("C:\\Image");
+	
+	CreateFilePathIfNotExists(initialDir);
+	
 	CFileDialog dlg(TRUE, L"bmp", NULL, OFN_FILEMUSTEXIST, L"Image Files (*.bmp;*.jpg)|*.bmp;*.jpg|All Files (*.*)|*.*||");
 	dlg.m_ofn.lpstrInitialDir = initialDir;
 	if (dlg.DoModal() != IDOK) return;
@@ -651,4 +654,21 @@ void CCircularMeasuringInstrumentDlg::OnBnClickedActionButton()
 {
 	std::thread actionThread(&CCircularMeasuringInstrumentDlg::PerformAction, this);
 	actionThread.detach();
+}
+
+bool CCircularMeasuringInstrumentDlg::CreateFilePathIfNotExists(const CString& filePath) {
+
+	if (PathFileExists(filePath)) return true;
+
+	// 파일 경로에서 디렉토리 경로만 추출
+	CString directoryPath = filePath.Left(filePath.ReverseFind('\\'));
+
+	// 디렉토리 생성
+	if (::PathFileExists(directoryPath) == FALSE) {
+		int result = SHCreateDirectoryEx(NULL, directoryPath, NULL);
+		if (result != ERROR_SUCCESS && result != ERROR_ALREADY_EXISTS) {
+			return false;
+		}
+	}
+	return true;
 }
