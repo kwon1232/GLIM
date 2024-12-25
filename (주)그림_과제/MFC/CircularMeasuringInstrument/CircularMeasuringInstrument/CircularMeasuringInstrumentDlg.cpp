@@ -295,11 +295,13 @@ void CCircularMeasuringInstrumentDlg::MakeCircle()
 
 void CCircularMeasuringInstrumentDlg::OnOpenImage()
 {
+	std::lock_guard<std::mutex> lock(m_imageMutex);
 	if (IsAction)
 	{
 		AfxMessageBox(L"다른 작업을 수행중 입니다.");
 		return;
 	}
+
 	IsLoad = true;
 	CString initialDir = _T("C:\\Image");
 	
@@ -311,7 +313,7 @@ void CCircularMeasuringInstrumentDlg::OnOpenImage()
 
 	CString selectedFilePath = dlg.GetPathName();
 
-	m_ptrImage = std::make_unique<CImage>(m_image);
+	//m_ptrImage = std::make_unique<CImage>(m_image);
 
 	// 기존 객체 해제 및 새로운 객체 생성
 	if (!m_image.IsNull()) {
@@ -666,6 +668,7 @@ void CCircularMeasuringInstrumentDlg::OnBnClickedLoadImageBnt()
 
 void CCircularMeasuringInstrumentDlg::OnBnClickedActionButton()
 {
+	std::lock_guard<std::mutex> lock(m_imageMutex);
 	std::thread actionThread(&CCircularMeasuringInstrumentDlg::PerformAction, this);
 	actionThread.detach();
 }

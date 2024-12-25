@@ -4,7 +4,7 @@
 
 #pragma once
 #include <random>
-
+#include <mutex>
 
 // CCircularMeasuringInstrumentDlg 대화 상자
 class CCircularMeasuringInstrumentDlg : public CDialogEx
@@ -33,6 +33,8 @@ protected:
 	HICON m_hIcon;
 
 	CStatic m_CenterPos;
+
+	std::mutex m_imageMutex;
 
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
