@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <random>
 
 
 // CCircularMeasuringInstrumentDlg 대화 상자
@@ -47,6 +48,7 @@ public:
 	afx_msg void OnBnClickedActionButton();
 
 	bool IsAction = false;
+	bool IsLoad = false;
 
 	void InitMakeCircle();
 
@@ -61,6 +63,10 @@ public:
 	void DrawCircleAnnotations(CDC* pImageDC, double centerX, double centerY, double radius);
 	void PerformAction();
 	void DrawCircleAt(int x, int y, int radius);
+	std::random_device rd;       // 시드 생성
+	std::mt19937 gen;
 
 	CEdit m_interval;
+	std::unique_ptr<CImage> m_ptrImage;
+	std::unique_ptr<CImage> m_ptrLoadImage;
 };

@@ -13,7 +13,6 @@
 #endif
 #include <vector>
 #include <thread>
-#include <time.h>
 
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
@@ -109,7 +108,7 @@ BOOL CCircularMeasuringInstrumentDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	srand((time(NULL)));
+	std::mt19937 gen(rd());
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -167,6 +166,11 @@ HCURSOR CCircularMeasuringInstrumentDlg::OnQueryDragIcon()
 
 void CCircularMeasuringInstrumentDlg::OnBnClickedMakeCircle()
 {
+	if (!m_image.IsNull() && IsLoad) {
+		m_image.Destroy();
+		IsLoad = false;
+	}
+
 	// 멤버 함수 InitMakeCircle을 스레드에서 실행
 	std::thread _thread0(&CCircularMeasuringInstrumentDlg::InitMakeCircle, this);
 
@@ -251,12 +255,18 @@ void CCircularMeasuringInstrumentDlg::MakeCircle()
 	CBrush blackBrush(RGB(0, 0, 0)); 
 	CRect rect(0, 0, m_Width, m_Height);
 
+
 	pImageDC->FillRect(rect, &blackBrush);
 
 	// 랜덤한 원의 위치 및 반지름 설정
-	int nRadius = rand() % 110 + 10;
-	int nCircleX = rand() % (m_Width - (nRadius * 2)) + nRadius;
-	int nCircleY = rand() % (m_Height - (nRadius * 2)) + nRadius;
+	std::uniform_int_distribution<> radiusDist(10, 119);
+	int nRadius = radiusDist(gen);
+
+	std::uniform_int_distribution<> xDist(nRadius, m_Width - nRadius * 2);
+	int nCircleX = xDist(gen);
+
+	std::uniform_int_distribution<> yDist(nRadius, m_Height - nRadius * 2);
+	int nCircleY = yDist(gen);
 
 
 	CPen redPen(PS_SOLID, 2, RGB(80, 80, 80));
@@ -290,7 +300,7 @@ void CCircularMeasuringInstrumentDlg::OnOpenImage()
 		AfxMessageBox(L"다른 작업을 수행중 입니다.");
 		return;
 	}
-
+	IsLoad = true;
 	CString initialDir = _T("C:\\Image");
 	
 	CreateFilePathIfNotExists(initialDir);
@@ -301,12 +311,16 @@ void CCircularMeasuringInstrumentDlg::OnOpenImage()
 
 	CString selectedFilePath = dlg.GetPathName();
 
+	m_ptrImage = std::make_unique<CImage>(m_image);
+
+	// 기존 객체 해제 및 새로운 객체 생성
 	if (!m_image.IsNull()) {
 		memset(&m_image, 0, sizeof(CImage));
 		m_image.Destroy();
 	}
 
 	HRESULT hr = m_image.Load(selectedFilePath);
+	m_ptrLoadImage = std::make_unique<CImage>(m_image);
 	// 디버깅용 코드
 	//if (SUCCEEDED(hr))
 	//{
