@@ -507,6 +507,8 @@ void CCircularMeasuringInstrumentDlg::DrawCircleAnnotations(CDC* pImageDC, doubl
 
 void CCircularMeasuringInstrumentDlg::PerformAction()
 {
+	if (m_image.IsNull()) return;
+
 	int nWidth = m_image.GetWidth();
 	int nHeight = m_image.GetHeight();
 	int nBpp = m_image.GetBPP();
